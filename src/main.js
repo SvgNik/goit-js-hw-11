@@ -2,7 +2,6 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 import { getImagesByQuery } from './js/pixabay-api';
-
 import {
   createGallery,
   clearGallery,
@@ -10,44 +9,42 @@ import {
   hideLoader,
 } from './js/render-functions';
 
-const formEL = document.querySelector('form');
-formEL.addEventListener('submit', onSubmit);
+const searchForm = document.querySelector('form');
+searchForm.addEventListener('submit', onFormSubmit);
 
-function onSubmit(event) {
-  event.preventDefault();
+function onFormSubmit(e) {
+  e.preventDefault();
 
-  showLoader();
+  const searchValue = e.currentTarget.elements['search-text'].value.trim();
+
   clearGallery();
+  showLoader();
 
-  const inputQuerry = event.currentTarget.elements['search-text'].value.trim();
-  if (inputQuerry === '') {
+  if (!searchValue) {
     iziToast.error({
-      message: 'Search input can`t be empty',
+      message: 'Please enter a search term',
     });
-    setTimeout(() => {
-      hideLoader();
-    }, 500);
-
-    event.target.reset();
+    hideLoader();
+    e.target.reset();
     return;
   }
 
-  getImagesByQuery(inputQuerry)
-    .then(response => {
-      if (response.hits.length === 0) {
+  getImagesByQuery(searchValue)
+    .then(data => {
+      if (!data.hits || data.hits.length === 0) {
         throw new Error(
           'Sorry, there are no images matching your search query. Please try again!'
         );
       }
-      createGallery(response.hits);
+      createGallery(data.hits);
     })
-    .catch(error => {
+    .catch(err => {
       iziToast.error({
-        message: error.message,
+        message: err.message,
       });
     })
     .finally(() => {
       hideLoader();
-      event.target.reset();
+      e.target.reset();
     });
 }

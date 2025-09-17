@@ -1,12 +1,12 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const galleryEl = document.querySelector('.gallery');
-const loaderEl = document.querySelector('.loader');
-const simplelightbox = new SimpleLightbox('.gallery a');
+const galleryContainer = document.querySelector('.gallery');
+const loaderNode = document.querySelector('.loader');
+const lightboxGallery = new SimpleLightbox('.gallery a');
 
 export function createGallery(images) {
-  const markup = images
+  const galleryMarkup = images
     .map(
       ({
         webformatURL,
@@ -16,46 +16,34 @@ export function createGallery(images) {
         views,
         comments,
         downloads,
-      }) => {
-        return `
+      }) => `
       <li>
         <a href="${largeImageURL}">
-          <img src="${webformatURL}" alt="${tags}"  />
-
+          <img src="${webformatURL}" alt="${tags}" />
           <ul>
-            <li>
-              <p>Likes</p>
-              <p>${likes}</p>
-            </li>
-            <li>
-              <p>Views</p>
-              <p>${views}</p>
-            </li>
-            <li>
-              <p>Comments</p>
-              <p>${comments}</p>
-            </li>
-            <li>
-              <p>Downloads</p>
-              <p>${downloads}</p>
-            </li>
+            <li><p>Likes</p><p>${likes}</p></li>
+            <li><p>Views</p><p>${views}</p></li>
+            <li><p>Comments</p><p>${comments}</p></li>
+            <li><p>Downloads</p><p>${downloads}</p></li>
           </ul>
         </a>
       </li>
-      `;
-      }
+    `
     )
     .join('');
 
-  galleryEl.innerHTML = markup;
-  simplelightbox.refresh();
+  galleryContainer.innerHTML = galleryMarkup;
+  lightboxGallery.refresh();
 }
+
 export function clearGallery() {
-  galleryEl.innerHTML = '';
+  galleryContainer.innerHTML = '';
 }
+
 export function showLoader() {
-  loaderEl.classList.remove('hidden');
+  loaderNode.classList.toggle('active', true);
 }
+
 export function hideLoader() {
-  loaderEl.classList.add('hidden');
+  loaderNode.classList.toggle('active', false);
 }
